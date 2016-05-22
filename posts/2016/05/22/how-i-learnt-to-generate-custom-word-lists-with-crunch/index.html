@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">How I learnt to generate custom word lists with Crunch</h1>
+	<span class="post-date">2016 May 22</span>
+	<p>As I said on <a href="http://camaya.co/posts/2016/05/09/hello-world">my first post</a>, I'm taking a course on Ethical Hacking and in one of the exercises I had to exploit a Windows 7 machine. I learnt a lot trying to get into that system and one of those things was how to generate word lists using Crunch, here's the story.</p>
+<p>After a <a href="https://nmap.org/">nmap</a> scan, it showed that the machine had smb with user level authentication as you can see in the following image:</p>
+<p><img alt="nmap scan results showing that the target machine had smb with user level authentication" src="http://camaya.co/images/nmap_results_smb.png" /></p>
+<p>Given this, I thought about brute-forcing the password. To do this, I used the metasploit framework and the module auxiliary/scanner/smb/smb_login which basically attempts to log in with different passwords and determine if it can access the target.</p>
+<p>One of the options of this module is PASS_FILE which is a path to a file with a list of passwords. On my first attempt, I used the password dictionary rockyou which is a huge dictionary that contains 14344392 passwords. After 30 minutes and hundreds of failed login attempts, I stopped the execution because it was going to take too much time and I wasn't very confident about it being successful, but I didn't give up on brute-forcing the password, I just thought that I needed a smaller dictionary.</p>
+<p>Instead of using an existing dictionary I decided that I was going to create my own but where to start? After taking another look at the nmap scan results and seeing again that the machine name is "THUNDERCATS" I thought that maybe the password was related to that animated series. I also knew that the system language was Spanish so I went to the <a href="https://es.wikipedia.org/wiki/Thundercats">Wikipedia article about the Thundercarts in Spanish</a> and I
+created a list with some keywords and the names of the main characters. This was going to be the base for my word list.</p>
+<p>If you think about how people usually create their passwords, they normally put a word (a name, something they like, etc.) and add some numbers to it (a date, a "lucky" number, etc.). There are a lot more variables in a password, but to keep things simple I decided that I was going to generate my word list only with lowercase letters and a maximum of 4 numbers, so for instance if we have the word snarf, we'd have these password possibilities: snarf, snarf3, snarf05, snarf451, snarf9801, etc.</p>
+<p>I already had my base words and the criteria I wanted to use, all I needed was a tool that helped me to generate the list. After googling a bit, I found <a href="https://sourceforge.net/projects/crunch-wordlist/">crunch</a> which its web page describes as:</p>
+<p>"Crunch is a wordlist generator where you can specify a standard character set or a character set you specify. crunch can generate all possible combinations and permutations."</p>
+<p>After reading crunch's man page and some tutorials on the Internet I had some idea on how to use it, but I didn't find a way to generate the word list I wanted with a single command. Of course, I could generate it with multiple commands, but doing that manually was not an option. This was a good reason to learn a bit of bash and write my first script, this was the result:</p>
+<div class="highlight"><pre><span></span><span class="ch">#!/bin/bash</span>
+
+<span class="k">function</span> generate_dictionary<span class="o">()</span> <span class="o">{</span>
+    <span class="nv">patterns</span><span class="o">=</span><span class="s2">&quot;</span><span class="nv">$1</span><span class="s2"> </span><span class="nv">$1</span><span class="s2">% </span><span class="nv">$1</span><span class="s2">%% </span><span class="nv">$1</span><span class="s2">%%% </span><span class="nv">$1</span><span class="s2">%%%%&quot;</span>
+    <span class="nv">temp_path</span><span class="o">=</span><span class="s2">&quot;/root/temp_dictionary.txt&quot;</span>
+    <span class="k">for</span> pattern in <span class="nv">$patterns</span><span class="p">;</span>
+        <span class="k">do</span> <span class="nb">eval</span> <span class="s2">&quot;crunch </span><span class="si">${#</span><span class="nv">pattern</span><span class="si">}</span><span class="s2"> </span><span class="si">${#</span><span class="nv">pattern</span><span class="si">}</span><span class="s2"> -t </span><span class="nv">$pattern</span><span class="s2"> -o </span><span class="nv">$temp_path</span><span class="s2">&quot;</span><span class="p">;</span>
+        cat <span class="nv">$temp_path</span> &gt;&gt; thundercats_dictionary.txt
+    <span class="k">done</span>
+    rm <span class="nv">$temp_path</span>
+<span class="o">}</span>
+
+<span class="nv">words</span><span class="o">=</span><span class="s2">&quot;thunder thundercats felino cosmico jaga leono leon-o tigro chitara panthro felina snarf thunderiano linxo linx-o pumara bengali mummra mumm-ra mutante reptilio mandrilok chacalom buitro mamutt ma-mutt lunatak amok alluro tugmug chilla ojorojo&quot;</span>
+
+<span class="k">for</span> word in <span class="nv">$words</span><span class="p">;</span>
+    <span class="k">do</span> generate_dictionary <span class="nv">$word</span>
+<span class="k">done</span>
+</pre></div>
+
+
+<p>Finally, I was able to brute-force the password with a much smaller dictionary. Unfortunately, I wasn't able to get a correct username and password using this method :(, but hey! I've learnt a lot from this.</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
