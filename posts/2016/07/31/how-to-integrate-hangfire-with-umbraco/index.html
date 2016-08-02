@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">How to integrate Hangfire with Umbraco</h1>
+	<span class="post-date">2016 Jul 31</span>
+	<p><a href="http://hangfire.io">Hangfire</a> is a <em>fantastic</em> tool that I've found myself using more and more on every project I work.</p>
+<p>If you haven't heard of Hangfire before, it allows you to perform background tasks inside <a href="http://www.asp.net/">ASP.NET</a> applications. This "simple" thing opens a broad range of possibilities, for example, send emails or send data to a web service without the users having to wait for those operations to finish. </p>
+<p>If you want to know more about it, check out their <a href="http://docs.hangfire.io/en/latest/">documentation</a> which is great.</p>
+<p>Now, let's see how to integrate Hangfire with Umbraco.
+For this post, I've used <strong>Umbraco 7.4.3</strong> and <strong>Hangfire 1.6.1</strong>.</p>
+<p>Assuming you already have an Umbraco installation ready, the first step to start using Hangfire is installing it and the easiest way to do that is through Nuget, just execute:</p>
+<div class="highlight"><pre><span></span>Install-Package Hangfire
+</pre></div>
+
+
+<p>Once you've done that, you need to configure a couple of things:</p>
+<ol>
+<li>Create a class that inherits from <strong>UmbracoDefaultOwinStartup</strong> and override its <strong>Configuration</strong> method with the following content:</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">Owin</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Umbraco.Web</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Hangfire</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">UmbracoHangfireExample.App_Start</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">Startup</span> <span class="p">:</span> <span class="n">UmbracoDefaultOwinStartup</span>
+    <span class="p">{</span>
+
+        <span class="k">public</span> <span class="k">override</span> <span class="k">void</span> <span class="nf">Configuration</span><span class="p">(</span><span class="n">IAppBuilder</span> <span class="n">app</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">base</span><span class="p">.</span><span class="n">Configuration</span><span class="p">(</span><span class="n">app</span><span class="p">);</span>
+
+            <span class="c1">// Configure the database where Hangfire is going </span>
+            <span class="c1">// to create its tables</span>
+            <span class="kt">var</span> <span class="n">cs</span> <span class="p">=</span> <span class="n">Umbraco</span><span class="p">.</span><span class="n">Core</span><span class="p">.</span><span class="n">ApplicationContext</span><span class="p">.</span><span class="n">Current</span>
+                <span class="p">.</span><span class="n">DatabaseContext</span><span class="p">.</span><span class="n">ConnectionString</span><span class="p">;</span>
+            <span class="n">GlobalConfiguration</span><span class="p">.</span><span class="n">Configuration</span>
+                <span class="p">.</span><span class="n">UseSqlServerStorage</span><span class="p">(</span><span class="n">cs</span><span class="p">);</span>
+
+            <span class="c1">// Configure Hangfire&#39;s dashboard with the default options</span>
+            <span class="n">app</span><span class="p">.</span><span class="n">UseHangfireDashboard</span><span class="p">();</span>
+
+            <span class="c1">// Create a default Hangfire server</span>
+            <span class="n">app</span><span class="p">.</span><span class="n">UseHangfireServer</span><span class="p">();</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<ol>
+<li>On the <strong>appSettings</strong> section of the <strong>web.config</strong>, make the following changes:</li>
+</ol>
+<div class="highlight"><pre><span></span><span class="c">&lt;!-- Tell Umbraco to ignore the ~/hangfire path --&gt;</span>
+<span class="nt">&lt;add</span> <span class="na">key=</span><span class="s">&quot;umbracoReservedPaths&quot;</span> <span class="na">value=</span><span class="s">&quot;~/umbraco,~/install/,~/hangfire&quot;</span> <span class="nt">/&gt;</span>
+
+<span class="c">&lt;!-- Use our custom class as Startup --&gt;</span>
+<span class="nt">&lt;add</span> <span class="na">key=</span><span class="s">&quot;owin:appStartup&quot;</span> <span class="na">value=</span><span class="s">&quot;UmbracoHangfireExample.App_Start.Startup&quot;</span> <span class="nt">/&gt;</span>
+</pre></div>
+
+
+<p>That's it. You can start using Hangfire now. Also, one of Hangfire's greatest features is its dashboard which you can already use running the website and going to ~/hangfire.</p>
+<p><img alt="Hangfire dashboard" src="http://camaya.co/images/hangfire_dashboard.png" /></p>
+<p>This is enough for a dev environment, but you need to configure authorisation for the dashboard to use it in production. <a href="http://docs.hangfire.io/en/latest/configuration/using-dashboard.html#configuring-authorization">The official docs on this topic</a> are great to understand how it works and see some examples, but as we're seeing how to integrate Hangfire with Umbraco, I'll show you how to configure it to only allow backoffice's users with Developer permissions.</p>
+<p>The first step is creating the following authorisation filter:</p>
+<div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">Hangfire.Dashboard</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Linq</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">System.Web</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Umbraco.Core</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Umbraco.Core.Security</span><span class="p">;</span>
+<span class="k">using</span> <span class="nn">Hangfire.Annotations</span><span class="p">;</span>
+
+<span class="k">namespace</span> <span class="nn">UmbracoHangfireExample.Filters</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="k">class</span> <span class="nc">UmbracoUserAuthorizationFilter</span> <span class="p">:</span> <span class="n">IDashboardAuthorizationFilter</span>
+    <span class="p">{</span>
+
+        <span class="k">public</span> <span class="kt">bool</span> <span class="nf">Authorize</span><span class="p">([</span><span class="n">NotNull</span><span class="p">]</span> <span class="n">DashboardContext</span> <span class="n">context</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="kt">var</span> <span class="n">auth</span> <span class="p">=</span> <span class="k">new</span> <span class="n">HttpContextWrapper</span><span class="p">(</span><span class="n">HttpContext</span><span class="p">.</span><span class="n">Current</span><span class="p">).</span><span class="n">GetUmbracoAuthTicket</span><span class="p">();</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">auth</span> <span class="p">==</span> <span class="k">null</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="k">return</span> <span class="k">false</span><span class="p">;</span>
+            <span class="p">}</span>
+
+            <span class="kt">var</span> <span class="n">backofficeUser</span> <span class="p">=</span> <span class="n">ApplicationContext</span><span class="p">.</span><span class="n">Current</span><span class="p">.</span><span class="n">Services</span><span class="p">.</span><span class="n">UserService</span><span class="p">.</span><span class="n">GetByUsername</span><span class="p">(</span><span class="n">auth</span><span class="p">.</span><span class="n">Name</span><span class="p">);</span>
+            <span class="kt">var</span> <span class="n">isAllowed</span> <span class="p">=</span> <span class="n">backofficeUser</span> <span class="p">!=</span> <span class="k">null</span> <span class="p">&amp;&amp;</span>
+                <span class="n">backofficeUser</span><span class="p">.</span><span class="n">AllowedSections</span><span class="p">.</span><span class="n">Any</span><span class="p">(</span><span class="n">x</span> <span class="p">=&gt;</span> <span class="n">x</span><span class="p">.</span><span class="n">Equals</span><span class="p">(</span><span class="s">&quot;developer&quot;</span><span class="p">,</span> <span class="n">StringComparison</span><span class="p">.</span><span class="n">InvariantCultureIgnoreCase</span><span class="p">));</span>
+            <span class="k">return</span> <span class="n">isAllowed</span><span class="p">;</span>
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Then you need to change the dashboard configuration in the Startup class to use the new filter:</p>
+<div class="highlight"><pre><span></span><span class="kt">var</span> <span class="n">dashboardOptions</span> <span class="p">=</span> <span class="k">new</span> <span class="n">DashboardOptions</span>
+<span class="p">{</span>
+    <span class="n">Authorization</span> <span class="p">=</span> <span class="k">new</span><span class="p">[]</span>
+    <span class="p">{</span>
+        <span class="k">new</span> <span class="nf">UmbracoUserAuthorizationFilter</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">app</span><span class="p">.</span><span class="n">UseHangfireDashboard</span><span class="p">(</span><span class="s">&quot;/hangfire&quot;</span><span class="p">,</span> <span class="n">dashboardOptions</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Now you can only use the dashboard if you're signed in into Umbraco's backoffice and you've got access to the developer section.</p>
+<p>The last configuration tweak is telling Hangfire where to redirect us when we try to go to the dashboard but we haven't signed in into Umbraco's backoffice yet. By default, Hangfire redirects us to /login.aspx?ReturnUrl=%2fhangfire and that gives us a 404 which is not very cool, it'd be better if we got redirected to ~/umbraco. To do that, make the following change on the <strong>web.config</strong> inside the <strong>system.web</strong> section.</p>
+<div class="highlight"><pre><span></span><span class="nt">&lt;authentication</span> <span class="na">mode=</span><span class="s">&quot;Forms&quot;</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;forms</span> <span class="na">name=</span><span class="s">&quot;.ASPXAUTH&quot;</span> <span class="na">loginUrl=</span><span class="s">&quot;~/umbraco&quot;</span> <span class="na">protection=</span><span class="s">&quot;All&quot;</span> <span class="na">path=</span><span class="s">&quot;/&quot;</span> <span class="nt">/&gt;</span>
+<span class="nt">&lt;/authentication&gt;</span>
+</pre></div>
+
+
+<p>That's all. I hope you've found this useful. 
+I've uploaded the code to Github so that you can play with it: <a href="https://github.com/camaya/umbraco-hangfire-example">https://github.com/camaya/umbraco-hangfire-example</a></p>
+<p>Before you go: I don't have a comments system on this blog, but I'd love to hear your thoughts so feel free to reach me on Twitter <a href="https://twitter.com/_camaya">@_camaya</a>.</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
