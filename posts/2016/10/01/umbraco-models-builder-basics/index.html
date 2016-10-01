@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Umbraco Models Builder basics</h1>
+	<span class="post-date">2016 Oct 01</span>
+	<p><a href="https://github.com/zpqrtbnk/Zbu.ModelsBuilder">Umbraco Models Builder</a> was one of the many packages out there to create strongly typed models on Umbraco. From version 7.4 it is part of the core so everyone gets it out of the box.</p>
+<p>The first things you need to know about Models Builder is how to enable/disable it and how you want your models to be generated. I won't explain those things as they are already explained in different places, for example, <a href="https://twitter.com/mozzy16">Thomas Morris</a> has a post on his blog explaining that: <a href="http://tcmorris.net/blog/getting-started-with-models-builder/">Getting started with Models Builder</a>. Read it and then come back.</p>
+<p>Now I'll show you how to actually use the generated models in 3 different cases:</p>
+<ol>
+<li>Showing content from a simple node.</li>
+<li>Showing content from a node that has a relation with another node.</li>
+<li>Showing content from children nodes.</li>
+</ol>
+<p>The data structure I used for my examples is the following:</p>
+<p><img alt="Umbraco content tree" src="http://camaya.co/images/models_builder_basics_01_content.png" /></p>
+<p>The Author Document Type has the following properties:</p>
+<ul>
+<li>Name - Textstring</li>
+<li>Picture - Image Cropper</li>
+<li>Twitter handle - Textstring</li>
+</ul>
+<p>And the Post Document Type has these:</p>
+<ul>
+<li>Title - Textstring</li>
+<li>Content - Rich Text Editor</li>
+<li>Author - Content Picker</li>
+</ul>
+<p>The Blog and the Authors Document Types are only containers.</p>
+<h2>Showing content from a simple node</h2>
+<p>Our simplest doc type is the Author one so let's see how the view would look for it:</p>
+<p><img alt="Author view" src="http://camaya.co/images/models_builder_basics_02_author_cshtml.png" /></p>
+<p>There are two interesting things here:</p>
+<ol>
+<li>
+<p>The inherits, we're using <strong>UmbracoViewPage</strong> instead of <strong>UmbracoTemplatePage</strong> which is the default. Why? Because <strong>UmbracoTemplatePage</strong> is only necessary if you plan to use the <strong>CurrentPage</strong> property to have <em>dynamic</em> access to the content and we're using <em>strongly typed models</em> so <strong>UmbracoViewPage</strong> is the right choice. For more info, see: <a href="https://our.umbraco.org/forum/developers/api-questions/52597-What-is-the-difference-between-UmbracoViewPage-and-UmbracoTemplatePage">What is the difference between UmbracoViewPage and UmbracoTemplatePage</a>.</p>
+</li>
+<li>
+<p>We are passing the <strong>Model</strong> object to the partial view because the Model object <em>is</em> an Author object.</p>
+</li>
+</ol>
+<p>The reason for the partial is because I'll reuse it in the next example.</p>
+<p>The <strong>AuthorInfo</strong> partial is this:</p>
+<p><img alt="Author info partial view" src="http://camaya.co/images/models_builder_basics_03_author_info_cshtml.png" /></p>
+<p>The code speaks for itself, <em>no</em> more <strong>GetProperty</strong> or <strong>GetPropertyValue</strong> strings around. Much cleaner, readable and <em>less error prone</em>.</p>
+<h2>Showing content from a node that has a relation with another node</h2>
+<p>Now let's see how to show the author information in the post view:</p>
+<p><img alt="Post view" src="http://camaya.co/images/models_builder_basics_04_post_cshtml.png" /></p>
+<p>The type of the <strong>PostAuthor</strong> property is <strong>object</strong> and as it is a content picker, we have the <strong>node id</strong> there so we only need to get the node content and cast it to the type we need, in this case Author, and pass it to our partial view.</p>
+<h2>Showing content from children nodes</h2>
+<p>In this last example we'll see how to show the list of posts in the blog view:</p>
+<p><img alt="Blog view" src="http://camaya.co/images/models_builder_basics_05_blog_cshtml.png" /></p>
+<p>The navigation is very simple, only use the generic overload of <strong>Children</strong> or <strong>Parent</strong> to get them as the type you need.</p>
+<p>This is enough to get you started with Models Builder. Now you've got no excuses to not use strongly typed models.
+I've uploaded the code to Github so you can play with it: <a href="https://github.com/camaya/umbraco-models-builder-basics">https://github.com/camaya/umbraco-models-builder-basics</a></p>
+<p>Before you go: I don't have a comments system on this blog, but I'd love to hear your thoughts so feel free to reach me on Twitter <a href="https://twitter.com/_camaya">@_camaya</a>.</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
