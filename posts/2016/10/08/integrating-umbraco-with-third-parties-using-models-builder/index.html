@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Integrating Umbraco with third parties using Models Builder</h1>
+	<span class="post-date">2016 Oct 08</span>
+	<p>In my last post I talked about the <a href="http://camaya.co/posts/2016/10/01/umbraco-models-builder-basics">Umbraco Models Builder Basics</a> where I showed how we can read our sites data using automatically generated strongly typed models, but sometimes we've got to integrate our Umbraco solutions with third parties and mix their data with ours. In this post, I'll explain how we can achieve this using Umbraco Models Builder.</p>
+<p>For this example, we're going to integrate with the <strong>Eventbrite API</strong>. The idea is that we want to show Eventbrite events in the website with its own look &amp; feel and optionally we could have extra information that exists only in the <strong>Umbraco</strong> solution.</p>
+<p>First, we need to create a Document Type called Event with these properties:</p>
+<ul>
+<li>Eventbrite Id - Textstring</li>
+<li>Extra Info - RTE</li>
+</ul>
+<p>In the event view, we want to show: the extra info from the <strong>Document Type</strong> and the event name and description from <strong>Eventbrite</strong>. Thanks to <strong>Models Builder</strong> we <em>already</em> have a model for the data on Umbraco. For the Eventbrite data we need this model:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">EventInfo</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">TextInfo</span> <span class="n">Name</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span><span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">TextInfo</span> <span class="n">Description</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>To <strong>mix the data</strong>, we need to create a <strong>view model</strong> which is what the view is actually going to use.</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">EventViewModel</span>
+<span class="p">{</span>
+    <span class="k">public</span> <span class="n">Event</span> <span class="n">UmbEvent</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+    <span class="k">public</span> <span class="n">EventInfo</span> <span class="n">EventbriteEvent</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>In order to initialise this view model and send it to the view, we need a controller:</p>
+<div class="highlight"><pre><span></span><span class="k">public</span> <span class="k">class</span> <span class="nc">EventController</span> <span class="p">:</span> <span class="n">RenderMvcController</span>
+<span class="p">{</span>
+
+    <span class="k">public</span> <span class="k">async</span> <span class="n">Task</span><span class="p">&lt;</span><span class="n">ActionResult</span><span class="p">&gt;</span> <span class="n">Event</span><span class="p">(</span><span class="n">RenderModel</span> <span class="n">model</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="kt">var</span> <span class="n">umbEvent</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Event</span><span class="p">(</span><span class="n">model</span><span class="p">.</span><span class="n">Content</span><span class="p">);</span>
+        <span class="kt">var</span> <span class="n">eventBriteEvent</span> <span class="p">=</span> <span class="k">await</span> <span class="n">eventbrite</span><span class="p">.</span><span class="n">GetEventAsync</span><span class="p">(</span><span class="n">umbEvent</span><span class="p">.</span><span class="n">EventbriteId</span><span class="p">);</span>
+
+        <span class="kt">var</span> <span class="n">vm</span> <span class="p">=</span> <span class="k">new</span> <span class="n">EventViewModel</span><span class="p">();</span>
+        <span class="n">vm</span><span class="p">.</span><span class="n">UmbEvent</span> <span class="p">=</span> <span class="n">umbEvent</span><span class="p">;</span>
+        <span class="n">vm</span><span class="p">.</span><span class="n">EventbriteEvent</span> <span class="p">=</span> <span class="n">eventBriteEvent</span><span class="p">;</span>
+        <span class="k">return</span> <span class="nf">CurrentTemplate</span><span class="p">(</span><span class="n">vm</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>This controller does 4 things:</p>
+<ol>
+<li>It creates the umbraco model using the very handy constructor that takes an <strong>IPublishedContent</strong> object.</li>
+<li>It gets the data from <strong>Eventbrite</strong>.</li>
+<li>It creates the event view model.</li>
+<li>Finally, it returns the current template with our view model.</li>
+</ol>
+<p>The last part is showing the data in the view:</p>
+<div class="highlight"><pre><span></span><span class="n">@inherits</span> <span class="n">UmbracoViewPage</span><span class="p">&lt;</span><span class="n">UmbracoModelsBuilderThirdParties</span><span class="p">.</span><span class="n">ViewModels</span><span class="p">.</span><span class="n">EventViewModel</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="n">h1</span><span class="p">&gt;</span><span class="n">@Model</span><span class="p">.</span><span class="n">EventbriteEvent</span><span class="p">.</span><span class="n">Name</span><span class="p">.</span><span class="n">Text</span><span class="p">&lt;/</span><span class="n">h1</span><span class="p">&gt;</span>
+<span class="n">@Html</span><span class="p">.</span><span class="n">Raw</span><span class="p">(</span><span class="n">Model</span><span class="p">.</span><span class="n">EventbriteEvent</span><span class="p">.</span><span class="n">Description</span><span class="p">.</span><span class="n">Html</span><span class="p">)</span>
+<span class="n">@Html</span><span class="p">.</span><span class="n">Raw</span><span class="p">(</span><span class="n">Model</span><span class="p">.</span><span class="n">UmbEvent</span><span class="p">.</span><span class="n">ExtraInfo</span><span class="p">)</span>
+</pre></div>
+
+
+<p>And that's how you make <strong>clean integrations</strong> with third parties in <strong>Umbraco</strong>.</p>
+<p>Keep in mind that the code snippets on this post are incomplete as I wanted to show only the parts related to the topic, but as always I've uploaded the code to Github so you can play with it: <a href="https://github.com/camaya/umbraco-models-builder-integration">https://github.com/camaya/umbraco-models-builder-integration</a> although you'll need to create your own Eventbrite API key and put it on the web.config if you want to run it.</p>
+<p>Before you go: I don't have a comments system on this blog, but I'd love to hear your thoughts so feel free to reach me on Twitter <a href="https://twitter.com/_camaya">@_camaya</a>.</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
