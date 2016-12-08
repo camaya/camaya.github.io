@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Put a Latch on your Umbraco backoffice</h1>
+	<span class="post-date">2016 Dec 08</span>
+	<h2>TL;DR</h2>
+<p>Watch the video at the bottom of this post.</p>
+<h2>What is Latch?</h2>
+<p>Some time this year, I found <strong>Latch</strong> which is a very cool service that allows you to protect your online identities by closing or opening them. The way it works is very simple yet powerful. For instance, let's  take <a href="https://twitter.com/_camaya">my Twitter account</a> as an example.</p>
+<p>By default, If someone knew my credentials they could impersonate me and send tweets on my behalf. To prevent that I could install the Latch application on my mobile phone and create a Latch for my Twitter account. A Latch has 2 states: <em>open</em> or <em>closed</em>. If it is <strong>open</strong> I'm able to enter and use my account normally, but if it is <strong>closed</strong> I can't enter to my account, <em>even if the credentials are correct</em>. Additionally, the Latch mobile application sends me a notification if someone tries to access to my account <strong>with the correct credentials</strong>.</p>
+<p>As we can see, Latch works as a second factor authentication, 2FA for short. This is not new and there are multiple implementations of 2FA mechanisms, being a SMS code the most common one. Some of the advantages of using Latch for this purpose are:</p>
+<ul>
+<li>
+<p>It gives you privacy, meaning  that you don't have to share personal information with your service provider. For instance, if you use the SMS as 2FA, you must tell your phone number to the service provider.</p>
+</li>
+<li>
+<p>If you don't have access to your phone for any reason (you lost it, someone stole it, etc.), you can just sign in to your Latch account from another device and you're good to go.</p>
+</li>
+<li>
+<p>You get a non invasive notification if someone tries to access to your online identity with the correct credentials.</p>
+</li>
+</ul>
+<p>This is the primary use for Latch, but definitely not the only one. It can also be used as an authorisation mechanism. For example I could create a Latch to allow or disallow money transfers on my bank account.</p>
+<p>To wrap up, a Latch is nothing more than something you can open or close to allow or disallow an operation and what you can protect with it depends on the provider implementation.</p>
+<p>If you want to know more about Latch, go to their <a href="https://latch.elevenpaths.com/">official website</a>.</p>
+<h2>So, where is Umbraco involved here?</h2>
+<p>Since I discovered the service, I thought that it would be cool and, most important, useful to make a package for Umbraco. Also, there was a <a href="http://blog.elevenpaths.com/2016/10/latch-plugins-contest-plugins-and-hacks.html">contest held by Eleven Paths to create a latch plugin</a>. This is how <strong>Umbraco Latch</strong> was born.</p>
+<p>Umbraco Latch is a package that allows <em>the administrator</em> to protect different operations within the backoffice by using Latch. The administrator part is key because not every user can configure Latch in their Umbraco account, but it is only the administrator who configures and manages the Latch operations.</p>
+<p>The things you can protect with this package are:</p>
+<ul>
+<li>The access to the backoffice</li>
+<li>The delete, publish an unpublish operations on any content node.</li>
+<li>The delete operation on media items.</li>
+<li>The delete operation on dictionary items.</li>
+</ul>
+<p>Furthermore, it gives you great flexibility by allowing you to pick if a Latch applies to all the CMS users or only to a segment of them. In the content operations, it allows you to pick which nodes you want to apply the operation.</p>
+<p>A couple of use cases could be:</p>
+<ul>
+<li>Allow access to the backoffice only at certain times of the day.</li>
+<li>Disallow the publish or unpublish operation on some critical nodes.</li>
+</ul>
+<p>All the information about the package can be found on the official documentation page at: <a href="https://umbracolatch.readme.io/docs">https://umbracolatch.readme.io/docs</a>.</p>
+<p>The Umbraco package can be found at: <a href="https://our.umbraco.org/projects/backoffice-extensions/umbraco-latch/">https://our.umbraco.org/projects/backoffice-extensions/umbraco-latch</a>.</p>
+<p>The source code is open sourced under the <a href="https://opensource.org/licenses/LGPL-2.1">LGPL 2.1 license</a> and you can find it on Github at: <a href="https://github.com/camaya/umbraco-latch">https://github.com/camaya/umbraco-latch</a>.</p>
+<h2>Video</h2>
+<p>Here's a video where you can see a demo of the package.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/CwgKmOlo_fI" frameborder="0" allowfullscreen></iframe>
+
+<p>I would love to know how you use this or any thought you have about it. As always, you can reach me out on Twitter <a href="https://twitter.com/_camaya">@_camaya</a>.</p>
+<p>Are you still here? Go and Latch your backoffice!</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
