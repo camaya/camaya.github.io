@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Winfortress, fortifying a Windows 10 workstation</h1>
+	<span class="post-date">2017 Jan 30</span>
+	<p>Continuing with my infosec learning, I recently finished the book "Máxima Seguridad en Windows: Secretos Técnicos" by Sergio de los Santos (<a href="https://twitter.com/ssantosv">@ssantosv</a>) which in English would be something like "Maximum Security in Windows: Technical Secrets". The synopsis on the back of the book says "The first book about security for Windows that does not explicitly recommend an antivirus." Instead of that, it delves on how security solutions works and when to apply them.</p>
+<p>In order to practise and apply what I learnt from the book, I started a new project called Winfortress.</p>
+<h2>What is Winfortress?</h2>
+<p>It is a collection of Powershell scripts aiming to enhance the <strong>security</strong> of a Windows 10 workstation. It is important to note that this project is focused on security and not on privacy. Although there are some privacy settings, they are marked as optional.</p>
+<p>Also, Windows 10 is the only environment where the scripts have been tested.</p>
+<p>All the scripts can be found at: <a href="https://github.com/camaya/winfortress">https://github.com/camaya/winfortress</a></p>
+<p>The main scripts can be categorised in:</p>
+<ul>
+<li>Windows security related settings.</li>
+<li>Administrative tools permissions.</li>
+</ul>
+<p>For each category, there are 3 types of scripts:</p>
+<ol>
+<li>A script to test the current workstation settings. These are the <strong>Test</strong>-[Category].ps1 scripts.</li>
+<li>A script to apply the recommended settings to the workstation. These are the <strong>Protect</strong>-[Category].ps1 scripts.</li>
+<li>A script to restore the settings to their original value. These are the [<strong>Backup</strong>|<strong>Unprotect</strong>]-[Category].ps1 scripts.</li>
+</ol>
+<p>There are also scripts which contain common code, they follow the Winfortress.[something].ps1 naming convention.</p>
+<h2>What is changed when the Winfortress Protect scripts are executed?</h2>
+<p>The list of the security related settings that are changed, their possible values and the recommended value that is applied, is at: <a href="https://github.com/camaya/winfortress/blob/master/scripts/Winfortress.Registry.ps1">https://github.com/camaya/winfortress/blob/master/scripts/Winfortress.Registry.ps1</a></p>
+<p>The list of administrative tools whose permissions are modified is at: <a href="https://github.com/camaya/winfortress/blob/master/scripts/Winfortress.AdministrativeTools.ps1">https://github.com/camaya/winfortress/blob/master/scripts/Winfortress.AdministrativeTools.ps1</a></p>
+<h2>Recommendation</h2>
+<p>Although I tried to make the changes as general as possible, I'm sure there are settings that you may prefer to configure in a different way. My recommendation is that you fork the project and adapt it to <strong>your needs</strong>.</p>
+<h2>Summary</h2>
+<p>I wrote the Winfortress scripts to make it easy to secure my workstation and I hope they can help you too.</p>
+<p>If you have any comment, suggestion or question you can reach me on Twitter <a href="https://twitter.com/_camaya">@_camaya</a> or you can send me an email to <code>&lt;cam at camaya.co&gt;</code>.</p>
+<p>Cheers.</p>
+<hr />
+<p>Big thanks to <a href="https://github.com/juanpescador">John Fisher</a> for proofreading this post.</p>
+</div>
+		</div>
+	</body>
+</html>
