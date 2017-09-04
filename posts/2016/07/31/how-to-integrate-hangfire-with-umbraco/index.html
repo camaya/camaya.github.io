@@ -107,7 +107,7 @@ For this post, I've used <strong>Umbraco 7.4.3</strong> and <strong>Hangfire 1.6
 
 
 <p>That's it. You can start using Hangfire now. Also, one of Hangfire's greatest features is its dashboard which you can start using immediately by running the website (F5) and navigating to ~/hangfire.</p>
-<p><img alt="Hangfire dashboard" src="http://camaya.co/images/hangfire_dashboard.png" /></p>
+<p><img alt="Hangfire dashboard" src="http://camaya.co/images/hangfire_dashboard.png"></p>
 <p>This is enough for a dev environment, but you need to configure authorisation for the dashboard to use it in production. <a href="http://docs.hangfire.io/en/latest/configuration/using-dashboard.html#configuring-authorization">The official docs on this topic</a> are great to understand how it works and see some examples, but as we're seeing how to integrate Hangfire with Umbraco, I'll show you how to configure it to only allow backoffice users with Developer permissions.</p>
 <p>The first step is creating the following authorisation filter:</p>
 <div class="highlight"><pre><span></span><span class="k">using</span> <span class="nn">Hangfire.Dashboard</span><span class="p">;</span>

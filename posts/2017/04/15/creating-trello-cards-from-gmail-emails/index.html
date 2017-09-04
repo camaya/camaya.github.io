@@ -55,15 +55,15 @@
 <p>During the last couple of months, I've been helping a friend to automate some tasks of his business.
 They've got an online shop where they "sell" tourism packages. I put sell in quotes because they don't actually sell directly through the website. The people who are interested in booking something have to send a booking request using a contact form and a person would arrange everything for them.</p>
 <p>When the users fill in the form, an email is sent to a particular email address with all the information. When they got an email, they forwarded it internally to the appropriate person to handle it.</p>
-<p><img alt="Contact Form" src="http://camaya.co/images/contact_form.png" /></p>
+<p><img alt="Contact Form" src="http://camaya.co/images/contact_form.png"></p>
 <p>This approach works ok but it had a big problem for them:</p>
 <p>They get about 30/40 requests per day and every request can last days, weeks or even months so it is, at a minimum, uncomfortable to manage all of that with only a mailbox.</p>
 <p>The first step was to find a way to manage all the requests easily and here's where I introduced Trello. There are <a href="http://blog.trello.com/how-to-manage-a-killer-sales-funnel-with-trello">multiple</a> <a href="https://trello.com/b/lrAIa0JW/sales-crm-pipeline">resources</a> on <a href="https://trello.com/teams/sales">how to manage a sales team with Trello</a> and after reading a bit about that, I come up with a board like this:</p>
-<p><img alt="Contact Form" src="http://camaya.co/images/sales_board.png" /></p>
+<p><img alt="Contact Form" src="http://camaya.co/images/sales_board.png"></p>
 <p>After the Trello board was in place, the workflow changed a bit: after receiving a request by email, they had to create a Trello card <strong>manually</strong> and assigned it to the right person. The problem with this is that creating cards manually is time-consuming and error prone.</p>
 <p>To avoid creating the cards completely manually we could have used this awesome Trello feature: <a href="http://help.trello.com/article/809-creating-cards-by-emailkj">Creating cards by email</a>, though they would've still needed to do something manually. For a few emails a day that wouldn't be a problem, but when we talk about maybe 40 emails per day, it is a problem.</p>
 <p>The other problem with that approach is that the card's description would be <strong>exactly</strong> the email's body and we didn't want that because the cards would be bloated as you can see in the following image:</p>
-<p><img alt="Contact Form" src="http://camaya.co/images/bloated_card.png" /></p>
+<p><img alt="Contact Form" src="http://camaya.co/images/bloated_card.png"></p>
 <p>We also could've used <a href="https://zapier.com/zapbook/email/trello/">Zapier</a> or <a href="https://ifttt.com/connect/trello/gmail">IFTTT</a> to create the cards. That would've saved the trouble of sending the emails to the Trello board, but we would've still had the issue with the bloated content.</p>
 <p>Here's where Python comes to the court. The idea was to create a script to do the following:</p>
 <ol>
@@ -113,16 +113,16 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 <h3>Extracting information from each email.</h3>
 <p>I used regular expressions to extract only the information I wanted.</p>
 <div class="highlight"><pre><span></span><span class="n">PATTERNS</span> <span class="o">=</span> <span class="p">{</span>
-    <span class="s1">&#39;request_date&#39;</span><span class="p">:</span> <span class="s1">r&#39;Fecha:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;client_name&#39;</span><span class="p">:</span> <span class="s1">r&#39;Cliente.*\n.*&lt;TD.*&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;client_phone&#39;</span><span class="p">:</span> <span class="s1">r&#39;fono.*\n.*&lt;TD.*&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;client_email&#39;</span><span class="p">:</span> <span class="s1">r&#39;E-mail:.*\n.*mailto:(.*)\&quot;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;client_city&#39;</span><span class="p">:</span> <span class="s1">r&#39;Ciudad:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;check_in&#39;</span><span class="p">:</span> <span class="s1">r&#39;Fecha de entrada:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;check_out&#39;</span><span class="p">:</span> <span class="s1">r&#39;Fecha de salida:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;number_people&#39;</span><span class="p">:</span> <span class="s1">r&#39;mero de personas:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="s1">r&#39;Producto.*\n.*&lt;TD.*&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
-    <span class="s1">&#39;inquiry&#39;</span><span class="p">:</span> <span class="s1">r&#39;Consulta:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span>
+    <span class="s1">&#39;request_date&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Fecha:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;client_name&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Cliente.*\n.*&lt;TD.*&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;client_phone&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;fono.*\n.*&lt;TD.*&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;client_email&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;E-mail:.*\n.*mailto:(.*)\&quot;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;client_city&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Ciudad:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;check_in&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Fecha de entrada:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;check_out&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Fecha de salida:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;number_people&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;mero de personas:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;product&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Producto.*\n.*&lt;TD.*&gt;(.*)&lt;/TD&gt;&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;inquiry&#39;</span><span class="p">:</span> <span class="sa">r</span><span class="s1">&#39;Consulta:.*\n.*&lt;TD.*?&gt;(.*)&lt;/TD&gt;&#39;</span>
 <span class="p">}</span>
 
 <span class="k">def</span> <span class="nf">extract_card_info</span><span class="p">(</span><span class="n">message_content</span><span class="p">):</span>
@@ -142,7 +142,7 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 
 <h3>Formatting the extracted information</h3>
 <p>The template is a text file with the format I want.</p>
-<div class="highlight"><pre><span></span><span class="n">PROJECT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="n">__file__</span><span class="p">))</span>
+<div class="highlight"><pre><span></span><span class="n">PROJECT_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">realpath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
 <span class="n">ASSETS_DIR</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">PROJECT_DIR</span><span class="p">,</span> <span class="s1">&#39;assets&#39;</span><span class="p">)</span>
 
 <span class="k">def</span> <span class="nf">get_formatted_card</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">card_info</span><span class="p">):</span>
@@ -276,8 +276,8 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 
 
 <p>Here are a couple of images of how the board looks after this script runs.</p>
-<p><img alt="Cards after script" src="http://camaya.co/images/cards_after_script_run.png" /></p>
-<p><img alt="Final card details" src="http://camaya.co/images/final_card_created.png" /></p>
+<p><img alt="Cards after script" src="http://camaya.co/images/cards_after_script_run.png"></p>
+<p><img alt="Final card details" src="http://camaya.co/images/final_card_created.png"></p>
 <p>The script is hosted on an Ubuntu Server and there's a cronjob that executes it every 5 minutes.
 This solves the two issues I had, the cards are created completely automatically and they have exactly the information I need.</p>
 <h2>Summary</h2>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Powershell tips for the every day developer</h1>
+	<span class="post-date">2017 Sep 03</span>
+	<h1>Introduction</h1>
+<p>Some months ago I decided to give Powershell a try and learn to use it for my daily tasks as a developer. I'll share here some common tasks I have to do almost every day and how I accomplish them using Powershell.</p>
+<h2>Finding files and directories</h2>
+<p>Who hasn't have the need to find a file in a directory without having any idea where to start looking for it? The <code>Get-ChildItem</code> command can help you with that.</p>
+<p><code>Get-ChildItem</code> without any argument lists all the content of the current directory, but it can do much more than that. For instance, let's say that I want to find all the JavaScript and CSS files in a directory called App_Plugins, the command would be:</p>
+<div class="highlight"><pre><span></span><span class="nb">Get-ChildItem</span> <span class="p">.\</span><span class="n">App_Plugins</span><span class="p">\</span> <span class="n">-Include</span> <span class="p">*.</span><span class="n">js</span><span class="p">,*.</span><span class="n">css</span> <span class="n">-Recurse</span>
+</pre></div>
+
+
+<h2>Searching keywords in text files</h2>
+<p>I usually have to review log files to figure out what happened with an application and you know that those logs can get really big. Let's say that I have to search the text "Order id: 345912" in a bunch of log files, the command would be:</p>
+<div class="highlight"><pre><span></span><span class="nb">Select-String</span> <span class="n">-Path</span> <span class="p">*.</span><span class="n">txt</span> <span class="n">-Pattern</span> <span class="s2">&quot;Order id: 345912&quot;</span>
+</pre></div>
+
+
+<h2>Reading a log file information in real time</h2>
+<p>Reading a website's log file in real time can be very useful when debugging a problem, that can be done with the following command:</p>
+<div class="highlight"><pre><span></span><span class="nb">Get-Content</span> <span class="n">log</span><span class="p">.</span><span class="n">txt</span> <span class="n">-Tail</span> <span class="n">10</span> <span class="n">-Wait</span>
+</pre></div>
+
+
+<h2>Getting a domain's DNS information</h2>
+<p>What is the TTL of a domain? Where does it point? Is the CNAME record configured correctly? All of those are common questions when configuring domains and all answers can be found by using the <code>Resolve-DnsName</code> command. For instance, let's list my domain's information:</p>
+<div class="highlight"><pre><span></span><span class="nb">Resolve-DnsName</span> <span class="n">-Name</span> <span class="n">camaya</span><span class="p">.</span><span class="n">co</span>
+</pre></div>
+
+
+<h2>Opening files</h2>
+<p>How do you open a .pdf or a .docx file without using the Windows explorer? you can use the <code>&amp;</code> symbol for that, for instance:</p>
+<div class="highlight"><pre><span></span><span class="p">&amp;</span> <span class="n">requirements</span><span class="p">.</span><span class="n">docx</span>
+</pre></div>
+
+
+<h2>Other common tasks</h2>
+<ul>
+<li>Moving files and directories: <code>Move-Item</code></li>
+<li>Copying files and directories: <code>Copy-Item</code></li>
+<li>Removing files and directories: <code>Remove-Item</code></li>
+<li>Creating an empty text file: <code>New-Item foo.js</code></li>
+<li>Reading the content of a text file: <code>Get-Content orders.txt</code></li>
+<li>Extracting the content of a zip file: <code>Expand-Archive images.zip -DestinationPath images</code></li>
+<li>Get all IIS websites and their status: <code>Get-Website</code>. You can use the <code>-Name</code> argument to filter the results</li>
+<li>Starting an IIS website: <code>Start-Website acme.local</code></li>
+<li>Stopping and IIS website: <code>Stop-Website acme.local</code></li>
+<li>Getting all Windows services and their status: <code>Get-Service</code>. You can use the <code>-Name</code> argument to filter the results</li>
+<li>Starting a Windows service: <code>Start-Service mongodb</code></li>
+<li>Stopping a Windows service: <code>Stop-Service mongodb</code></li>
+</ul>
+<h1>About commands names</h1>
+<p>I wrote all the examples above using the full name of the commands (or cmdlets in Powershell jargon), but I actually use aliases when working with them. For instance, <code>ls</code> instead of <code>Get-ChildItem</code> or <code>cat</code> instead of <code>Get-Content</code>. </p>
+<p>Aliases save me a few keystrokes and they're easier to remember. If you want to know the available aliases of a cmdlet you can use the <code>Get-Alias</code> cmdlet, for example:</p>
+<div class="highlight"><pre><span></span><span class="nb">Get-Alias</span> <span class="n">-Definition</span> <span class="nb">Get-ChildItem</span>
+</pre></div>
+
+
+<p>You can even create your own aliases, but I'll leave you figured out how to do that ;).</p>
+<h1>Summary</h1>
+<p>As you can see, there are a lot of things you can do without leaving the comfort of your keyboard by using Powershell and there are a lot more so if you are a terminal fan like I am, you should definitely learn to use it, the <code>Get-Help</code> cmdlet is a good way to start :).</p>
+<p>If you have any comment, suggestion or question you can reach me on Twitter (my DMs are open) <a href="https://twitter.com/_camaya">@_camaya</a> or you can send me an email to <code>&lt;cam at camaya.co&gt;</code>.</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
