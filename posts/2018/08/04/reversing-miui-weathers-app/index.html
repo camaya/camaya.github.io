@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+
+		<title>Cristhian Amaya</title>
+
+		<!-- CSS -->
+		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
+		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
+
+		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
+
+		<!-- RSS -->
+	</head>
+
+	<body>
+<div class="sidebar">
+	<div class="container sidebar-sticky">
+		<div class="sidebar-about">
+
+			<h1>
+				<a href="/">
+					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					Cristhian Amaya
+				</a>
+			</h1>
+			<p class="lead"></p>
+			<p class="lead">I make and break stuff in equal measure. </p>
+			<p></p>
+		</div>
+		<nav class="sidebar-nav">
+					<a class="sidebar-nav-item" href="https://twitter.com/_camaya" target="_blank">
+						<i class="fa fa-twitter"></i>
+					</a>
+					<a class="sidebar-nav-item" href="https://github.com/camaya" target="_blank">
+						<i class="fa fa-github"></i>
+					</a>
+		</nav>
+	</div>
+</div>		<div class="content container">
+<div class="post">
+	<h1 class="post-title">Reversing MIUI Weather's app</h1>
+	<span class="post-date">2018 Aug 04</span>
+	<h1>TL;DR</h1>
+<p>I reversed MIUI Weather's app to know why it needed access to the filesystem and to make and manage phone calls. The first one is used to save screenshots and the second one seems to be used to control some audio ads that are only "shown" to Chinese users.</p>
+<h1>Introduction</h1>
+<p>I own a Xiaomi Mi 5 phone which uses the MIUI ROM. Some days ago, I got an update to MIUI 9.6.1.0 and shortly after that I noticed that my weather widget was not showing me any information, instead, it just showed a link saying "Get weather info". I tapped on that link and the app asked me for these permissions:</p>
+<ul>
+<li>Allow <strong>Weather</strong> to make and manage phone calls?</li>
+<li>Allow <strong>Weather</strong> to access photos, media and files on your device?</li>
+</ul>
+<p>Those permissions, which were not on a previous version, struck me as odd for an app to see my city's temperature so I denied them. Because of that, the app would not run. I asked myself, why are those permissions so important that I can't use the app without allowing them? I tried to find the answer on google and I found that I was not the only one with that question:</p>
+<ul>
+<li><a href="http://en.miui.com/thread-2354549-1-1.html">http://en.miui.com/thread-2354549-1-1.html</a></li>
+<li><a href="http://en.miui.com/forum.php?mod=viewthread&amp;tid=2313317">http://en.miui.com/forum.php?mod=viewthread&amp;tid=2313317</a></li>
+<li><a href="https://www.reddit.com/r/oneplus/comments/5mvgn3/why_does_the_default_weather_app_ask_permission/">https://www.reddit.com/r/oneplus/comments/5mvgn3/why_does_the_default_weather_app_ask_permission/</a></li>
+</ul>
+<p>There are a ton more of posts asking this, but surprisingly all the answers I found were not helpful. They did not explain anything and basically said: "Just allow them and the app will work". That's not the answer I was looking for.</p>
+<p>This was the perfect excuse to finally try something I was meaning to do for quite some time: Reversing Android apps. I started searching for information about how to do it and I stumbled upon a great post by <a href="https://twitter.com/evilsocket">@evilsocket</a>: <a href="https://www.evilsocket.net/2017/04/27/Android-Applications-Reversing-101/">Android applications reversing 101</a>. I highly recommend you check it out.</p>
+<h1>Preparation</h1>
+<p>These are the tools I had to install to accomplish my task:</p>
+<ul>
+<li><a href="http://www.oracle.com/technetwork/java/javase/downloads/jre10-downloads-4417026.html">Java JRE</a></li>
+<li><a href="https://ibotpeaches.github.io/Apktool/install/">Apktool</a></li>
+<li>Android ADB which I installed using my package manager: <code>dnf install -y android-tools</code></li>
+<li><a href="https://github.com/skylot/jadx">jadx</a></li>
+</ul>
+<h1>App decompilation</h1>
+<p>With all the tools installed, I plugged my phone via USB and the first thing I had to do was getting the app's apk which I did whit these commands:</p>
+<ol>
+<li><code>adb shell pm list packages | grep weather</code> to find the name of the package I wanted.</li>
+<li><code>adb shell pm path com.miui.weather2</code> to get the apk path.</li>
+<li><code>adb pull /system/priv-app/Weather/Weather.apk</code> to copy the apk to my computer.</li>
+</ol>
+<p>After that, I tried to decompile the apk using apktool to check the AndroidManifest.xml: <code>apktool d Weather.apk</code> and this gave me the following error:</p>
+<p><img alt="Framework Error" src="http://camaya.co/images/reversing_miui_weather_app/apktool_framework_error.png"></p>
+<p>Remember that this was my first time doing this so I had no clue why it was not working. Time to google again.
+I found on apktool's documentation that I needed to install some Framework Files: <a href="https://ibotpeaches.github.io/Apktool/documentation/#framework-files to get the job done">https://ibotpeaches.github.io/Apktool/documentation/#framework-files to get the job done</a>.</p>
+<p>I found these MIUI's framework files on my phone: <code>/system/framework/framework-res.apk</code> and <code>/system/framework/framework-ext/framework-ext-res.apk</code> which I pull with <code>adb</code> and I installed them on my computer by executing:</p>
+<ul>
+<li><code>apktool if framework-res.apk -p miui_framework</code></li>
+<li><code>apktool if framework-ext-res.apk -p miui_framework</code></li>
+</ul>
+<p>With the framework installed, I run <code>apktool d Weather.apk -p miui_framework/</code> and I got the same error as before.</p>
+<p>I googled a bit more and found that I needed another framework file which was at: <code>/system/app/miui/miui.apk</code>. I installed it, run <code>apktool</code> again to decompile the app and it worked this time (yay!):</p>
+<p><img alt="Decode Successfull" src="http://camaya.co/images/reversing_miui_weather_app/apktool_decode_successfull.png"></p>
+<p>I had a look at the <code>AndroidManifest.xml</code> file to check the configured permissions and the app entry point.</p>
+<p><img alt="App Permissions" src="http://camaya.co/images/reversing_miui_weather_app/weather_permissions.png">
+<img alt="App Entry Point" src="http://camaya.co/images/reversing_miui_weather_app/weather_entry_point.png"></p>
+<p>The First part of the job was done. The next step was to read the app's Java code and for that, I used <strong>jadx</strong>. It couldn't have been easier, I opened the <em>Weater.apk</em> file with <code>jadx-gui</code> and that was it, I was able to read the app's Java code. Time to finally answer my questions.</p>
+<h1>Why does the MIUI Weather app need access to the filesystem?</h1>
+<p>There's a feature in the app to share the current weather. To do that, the app takes a screenshot and sends it to whomever you want.
+That screenshot is saved on the phone's storage which is why this permission is required.</p>
+<p><img alt="Storage Constants" src="http://camaya.co/images/reversing_miui_weather_app/snapshot_constants.png"></p>
+<p><img alt="Save Screenshot" src="http://camaya.co/images/reversing_miui_weather_app/save_snapshot.png"></p>
+<p><img alt="Share Screenshot" src="http://camaya.co/images/reversing_miui_weather_app/share_snapshot.png"></p>
+<h1>Why does the MIUI Weather app need to make and manage phone calls?</h1>
+<p>The app uses the <a href="https://developer.android.com/reference/android/telephony/TelephonyManager#listen(android.telephony.PhoneStateListener,%20int)">listen</a> method of the <code>TelephonyManager</code> class to monitor the <a href="https://developer.android.com/reference/android/telephony/PhoneStateListener.html#LISTEN_CALL_STATE">LISTEN_CALL_STATE</a> event:</p>
+<p><img alt="Event Listener" src="http://camaya.co/images/reversing_miui_weather_app/call_event_listener.png"></p>
+<p>This is what is executed when that event is triggered:</p>
+<p><img alt="Event Handler" src="http://camaya.co/images/reversing_miui_weather_app/call_event_handler.png"></p>
+<p>Audio? Here's that function:</p>
+<p><img alt="Stop Audio" src="http://camaya.co/images/reversing_miui_weather_app/stop_audio.png"></p>
+<p>The name implies that the audio could not be running so I searched where the audio started being used and I found this:</p>
+<p><img alt="Gain Audio Resources" src="http://camaya.co/images/reversing_miui_weather_app/gain_audio_resources.png"></p>
+<p>As you can see, that function is only executed when the ROM build is not international and the user's locale is Chinese simplified. It has something to do with text to speech so I searched a bit more and found that the app has some kind of audio advertisements for Chinese users, for example:</p>
+<p><img alt="Speech Ads" src="http://camaya.co/images/reversing_miui_weather_app/speech_ads.png"></p>
+<p>After all of this, my conclusion is that the phone permissions are used to control these audio ads. I wanted to change my phone's region to China and see this feature working but that's not possible, I suppose because I've got an international build of the ROM.</p>
+<h1>Summary</h1>
+<p>As far as I have seen in the app's code, it doesn't do anything weird with those permissions. Although I think Xiaomi could do better by doing the following things:</p>
+<ol>
+<li>Explain why they need those permissions. Especially if they seem strange for the type of app the user is going to use. For instance, it's obvious that the camera app needs access, well, to the camera, but it's definitely not obvious why the <strong>Weather</strong> app wants permissions to make and manage phone calls.</li>
+<li>Do not ask for permissions until you need them. For instance, the external storage permission should have been asked when the user tried to use the share feature.</li>
+</ol>
+<p>Last but not least, I really had a lot of fun doing my first reversing of an Android app :D. If you have any comment, suggestion or question you can reach me on Twitter (my DMs are open) <a href="https://twitter.com/_camaya">@_camaya</a> or you can send me an email to <code>&lt;cam at camaya.co&gt;</code>.</p>
+<p>Cheers.</p>
+</div>
+		</div>
+	</body>
+</html>
