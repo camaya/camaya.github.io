@@ -71,7 +71,9 @@
 </ol>
 <p>The code of the call from the main function looks like this:</p>
 <p><img alt="RC4 Function Call from main in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/rc4_function_call_main_cutter.png"></p>
-<p>Note that the call to the <code>fcn.1400012c0</code> function happens before the call to <code>rc4</code> and as shown in the previous image, that function also calls <code>rc4</code>. You'll understand this in a bit. Since there are no syscalls between offsets <code>0x1400068b</code> and <code>0x1400016bc</code>, this chunk can be emulated with <a href="https://radare.gitbooks.io/radare2book/disassembling/esil.html">ESIL</a> so that's what I did.</p>
+<p>Note that the call to the <code>fcn.1400012c0</code> function happens before the call to <code>rc4</code> and as shown in the previous image, that function also calls <code>rc4</code>. You'll understand this in a bit. Since there are no syscalls between offsets <code>0x14000168b</code> and <code>0x1400016bc</code>, this chunk can be <a href="https://radare.gitbooks.io/radare2book/content/analysis/emulation.html">emulated with ESIL</a>. I found this to be one of the most powerful features of r2 and the integration in Cutter is sleek.</p>
+<p>Here's a gif showing the emulation:</p>
+<p><img alt="Gif showing the emulation feature in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/emulation_cutter.gif"></p>
 <p>After the emulation, I learnt that:</p>
 <ol>
 <li>The function <code>fcn.140001340</code> returns the string <code>"EMUL4TION+RuLEZ!_R2C0N2o19"</code> which I'll call <strong>key1</strong></li>
