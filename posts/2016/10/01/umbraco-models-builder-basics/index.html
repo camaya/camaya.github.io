@@ -13,9 +13,9 @@
 		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
 		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
 
-		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/syntax.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
 		<!-- RSS -->
@@ -28,7 +28,7 @@
 
 			<h1>
 				<a href="/">
-					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					<img class="profile-picture" src="https://camaya.co/images/avatar.jpg">
 					Cristhian Amaya
 				</a>
 			</h1>
@@ -58,7 +58,7 @@
 <li>Showing content from children nodes.</li>
 </ol>
 <p>The data structure I used for my examples is the following:</p>
-<p><img alt="Umbraco content tree" src="http://camaya.co/images/models_builder_basics_01_content.png"></p>
+<p><img alt="Umbraco content tree" src="https://camaya.co/images/models_builder_basics_01_content.png"></p>
 <p>The Author Document Type has the following properties:</p>
 <ul>
 <li>Name - Textstring</li>
@@ -74,7 +74,7 @@
 <p>The Blog and the Authors Document Types are only containers.</p>
 <h2>Showing content from a simple node</h2>
 <p>Our simplest doc type is the Author one so let's see how the view would look for it:</p>
-<p><img alt="Author view" src="http://camaya.co/images/models_builder_basics_02_author_cshtml.png"></p>
+<p><img alt="Author view" src="https://camaya.co/images/models_builder_basics_02_author_cshtml.png"></p>
 <p>There are two interesting things here:</p>
 <ol>
 <li>
@@ -86,15 +86,15 @@
 </ol>
 <p>The reason for the partial is because I'll reuse it in the next example.</p>
 <p>The <strong>AuthorInfo</strong> partial is this:</p>
-<p><img alt="Author info partial view" src="http://camaya.co/images/models_builder_basics_03_author_info_cshtml.png"></p>
+<p><img alt="Author info partial view" src="https://camaya.co/images/models_builder_basics_03_author_info_cshtml.png"></p>
 <p>The code speaks for itself, <em>no</em> more <strong>GetProperty</strong> or <strong>GetPropertyValue</strong> strings around. Much cleaner, readable and <em>less error prone</em>.</p>
 <h2>Showing content from a node that has a relation with another node</h2>
 <p>Now let's see how to show the author information in the post view:</p>
-<p><img alt="Post view" src="http://camaya.co/images/models_builder_basics_04_post_cshtml.png"></p>
+<p><img alt="Post view" src="https://camaya.co/images/models_builder_basics_04_post_cshtml.png"></p>
 <p>The type of the <strong>PostAuthor</strong> property is <strong>object</strong> and as it is a content picker, we have the <strong>node id</strong> there so we only need to get the node content and cast it to the type we need, in this case Author, and pass it to our partial view.</p>
 <h2>Showing content from children nodes</h2>
 <p>In this last example we'll see how to show the list of posts in the blog view:</p>
-<p><img alt="Blog view" src="http://camaya.co/images/models_builder_basics_05_blog_cshtml.png"></p>
+<p><img alt="Blog view" src="https://camaya.co/images/models_builder_basics_05_blog_cshtml.png"></p>
 <p>The navigation is very simple, only use the generic overload of <strong>Children</strong> or <strong>Parent</strong> to get them as the type you need.</p>
 <p>This is enough to get you started with Models Builder. Now you've got no excuses to not use strongly typed models.
 I've uploaded the code to Github so you can play with it: <a href="https://github.com/camaya/umbraco-models-builder-basics">https://github.com/camaya/umbraco-models-builder-basics</a></p>

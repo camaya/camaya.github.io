@@ -13,9 +13,9 @@
 		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
 		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
 
-		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/syntax.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
 		<!-- RSS -->
@@ -28,7 +28,7 @@
 
 			<h1>
 				<a href="/">
-					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					<img class="profile-picture" src="https://camaya.co/images/avatar.jpg">
 					Cristhian Amaya
 				</a>
 			</h1>
@@ -81,7 +81,7 @@
 <li><code>adb pull /system/priv-app/Weather/Weather.apk</code> to copy the apk to my computer.</li>
 </ol>
 <p>After that, I tried to decompile the apk using apktool to check the AndroidManifest.xml: <code>apktool d Weather.apk</code> and this gave me the following error:</p>
-<p><img alt="Framework Error" src="http://camaya.co/images/reversing_miui_weather_app/apktool_framework_error.png"></p>
+<p><img alt="Framework Error" src="https://camaya.co/images/reversing_miui_weather_app/apktool_framework_error.png"></p>
 <p>Remember that this was my first time doing this so I had no clue why it was not working. Time to google again.
 I found on apktool's documentation that I needed to install some Framework Files: <a href="https://ibotpeaches.github.io/Apktool/documentation/#framework-files to get the job done">https://ibotpeaches.github.io/Apktool/documentation/#framework-files to get the job done</a>.</p>
 <p>I found these MIUI's framework files on my phone: <code>/system/framework/framework-res.apk</code> and <code>/system/framework/framework-ext/framework-ext-res.apk</code> which I pull with <code>adb</code> and I installed them on my computer by executing:</p>
@@ -91,28 +91,28 @@ I found on apktool's documentation that I needed to install some Framework Files
 </ul>
 <p>With the framework installed, I run <code>apktool d Weather.apk -p miui_framework/</code> and I got the same error as before.</p>
 <p>I googled a bit more and found that I needed another framework file which was at: <code>/system/app/miui/miui.apk</code>. I installed it, run <code>apktool</code> again to decompile the app and it worked this time (yay!):</p>
-<p><img alt="Decode Successfull" src="http://camaya.co/images/reversing_miui_weather_app/apktool_decode_successfull.png"></p>
+<p><img alt="Decode Successfull" src="https://camaya.co/images/reversing_miui_weather_app/apktool_decode_successfull.png"></p>
 <p>I had a look at the <code>AndroidManifest.xml</code> file to check the configured permissions and the app entry point.</p>
-<p><img alt="App Permissions" src="http://camaya.co/images/reversing_miui_weather_app/weather_permissions.png">
-<img alt="App Entry Point" src="http://camaya.co/images/reversing_miui_weather_app/weather_entry_point.png"></p>
+<p><img alt="App Permissions" src="https://camaya.co/images/reversing_miui_weather_app/weather_permissions.png">
+<img alt="App Entry Point" src="https://camaya.co/images/reversing_miui_weather_app/weather_entry_point.png"></p>
 <p>The First part of the job was done. The next step was to read the app's Java code and for that, I used <strong>jadx</strong>. It couldn't have been easier, I opened the <em>Weater.apk</em> file with <code>jadx-gui</code> and that was it, I was able to read the app's Java code. Time to finally answer my questions.</p>
 <h1>Why does the MIUI Weather app need access to the filesystem?</h1>
 <p>There's a feature in the app to share the current weather. To do that, the app takes a screenshot and sends it to whomever you want.
 That screenshot is saved on the phone's storage which is why this permission is required.</p>
-<p><img alt="Storage Constants" src="http://camaya.co/images/reversing_miui_weather_app/snapshot_constants.png"></p>
-<p><img alt="Save Screenshot" src="http://camaya.co/images/reversing_miui_weather_app/save_snapshot.png"></p>
-<p><img alt="Share Screenshot" src="http://camaya.co/images/reversing_miui_weather_app/share_snapshot.png"></p>
+<p><img alt="Storage Constants" src="https://camaya.co/images/reversing_miui_weather_app/snapshot_constants.png"></p>
+<p><img alt="Save Screenshot" src="https://camaya.co/images/reversing_miui_weather_app/save_snapshot.png"></p>
+<p><img alt="Share Screenshot" src="https://camaya.co/images/reversing_miui_weather_app/share_snapshot.png"></p>
 <h1>Why does the MIUI Weather app need to make and manage phone calls?</h1>
 <p>The app uses the <a href="https://developer.android.com/reference/android/telephony/TelephonyManager#listen(android.telephony.PhoneStateListener,%20int)">listen</a> method of the <code>TelephonyManager</code> class to monitor the <a href="https://developer.android.com/reference/android/telephony/PhoneStateListener.html#LISTEN_CALL_STATE">LISTEN_CALL_STATE</a> event:</p>
-<p><img alt="Event Listener" src="http://camaya.co/images/reversing_miui_weather_app/call_event_listener.png"></p>
+<p><img alt="Event Listener" src="https://camaya.co/images/reversing_miui_weather_app/call_event_listener.png"></p>
 <p>This is what is executed when that event is triggered:</p>
-<p><img alt="Event Handler" src="http://camaya.co/images/reversing_miui_weather_app/call_event_handler.png"></p>
+<p><img alt="Event Handler" src="https://camaya.co/images/reversing_miui_weather_app/call_event_handler.png"></p>
 <p>Audio? Here's that function:</p>
-<p><img alt="Stop Audio" src="http://camaya.co/images/reversing_miui_weather_app/stop_audio.png"></p>
+<p><img alt="Stop Audio" src="https://camaya.co/images/reversing_miui_weather_app/stop_audio.png"></p>
 <p>The name implies that the audio could not be running so I searched where the audio started being used and I found this:</p>
-<p><img alt="Gain Audio Resources" src="http://camaya.co/images/reversing_miui_weather_app/gain_audio_resources.png"></p>
+<p><img alt="Gain Audio Resources" src="https://camaya.co/images/reversing_miui_weather_app/gain_audio_resources.png"></p>
 <p>As you can see, that function is only executed when the ROM build is not international and the user's locale is Chinese simplified. It has something to do with text to speech so I searched a bit more and found that the app has some kind of audio advertisements for Chinese users, for example:</p>
-<p><img alt="Speech Ads" src="http://camaya.co/images/reversing_miui_weather_app/speech_ads.png"></p>
+<p><img alt="Speech Ads" src="https://camaya.co/images/reversing_miui_weather_app/speech_ads.png"></p>
 <p>After all of this, my conclusion is that the phone permissions are used to control these audio ads. I wanted to change my phone's region to China and see this feature working but that's not possible, I suppose because I've got an international build of the ROM.</p>
 <h1>Summary</h1>
 <p>As far as I have seen in the app's code, it doesn't do anything weird with those permissions. Although I think Xiaomi could do better by doing the following things:</p>

@@ -13,9 +13,9 @@
 		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
 		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
 
-		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/syntax.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
 		<!-- RSS -->
@@ -28,7 +28,7 @@
 
 			<h1>
 				<a href="/">
-					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					<img class="profile-picture" src="https://camaya.co/images/avatar.jpg">
 					Cristhian Amaya
 				</a>
 			</h1>
@@ -49,9 +49,9 @@
 <div class="post">
 	<h1 class="post-title">How I learnt to generate custom word lists with Crunch</h1>
 	<span class="post-date">2016 May 22</span>
-	<p>As I said on <a href="http://camaya.co/posts/2016/05/09/hello-world">my first post</a>, I'm taking a course on Ethical Hacking and in one of the exercises I had to exploit a Windows 7 machine. I learnt a lot trying to get into that system and one of those things was how to generate word lists using Crunch, here's the story.</p>
+	<p>As I said on <a href="https://camaya.co/posts/2016/05/09/hello-world">my first post</a>, I'm taking a course on Ethical Hacking and in one of the exercises I had to exploit a Windows 7 machine. I learnt a lot trying to get into that system and one of those things was how to generate word lists using Crunch, here's the story.</p>
 <p>After a <a href="https://nmap.org/">nmap</a> scan, it showed that the machine had smb with user level authentication as you can see in the following image:</p>
-<p><img alt="nmap scan results showing that the target machine had smb with user level authentication" src="http://camaya.co/images/nmap_results_smb.png"></p>
+<p><img alt="nmap scan results showing that the target machine had smb with user level authentication" src="https://camaya.co/images/nmap_results_smb.png"></p>
 <p>Given this, I thought about brute-forcing the password. To do this, I used the metasploit framework and the module auxiliary/scanner/smb/smb_login which basically attempts to log in with different passwords and determine if it can access the target.</p>
 <p>One of the options of this module is PASS_FILE which is a path to a file with a list of passwords. On my first attempt, I used the password dictionary rockyou which is a huge dictionary that contains 14344392 passwords. After 30 minutes and hundreds of failed login attempts, I stopped the execution because it was going to take too much time and I wasn't very confident about it being successful, but I didn't give up on brute-forcing the password, I just thought that I needed a smaller dictionary.</p>
 <p>Instead of using an existing dictionary I decided that I was going to create my own but where to start? After taking another look at the nmap scan results and seeing again that the machine name is "THUNDERCATS" I thought that maybe the password was related to that animated series. I also knew that the system language was Spanish so I went to the <a href="https://es.wikipedia.org/wiki/Thundercats">Wikipedia article about the Thundercarts in Spanish</a> and I

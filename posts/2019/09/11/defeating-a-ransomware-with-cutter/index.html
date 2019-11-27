@@ -13,9 +13,9 @@
 		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
 		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
 
-		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/syntax.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
 		<!-- RSS -->
@@ -28,7 +28,7 @@
 
 			<h1>
 				<a href="/">
-					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					<img class="profile-picture" src="https://camaya.co/images/avatar.jpg">
 					Cristhian Amaya
 				</a>
 			</h1>
@@ -54,37 +54,37 @@
 <p>During the training, there were 3 different exercises and one of them was about reversing a binary called <em>"M1ghty Ransomware.exe"</em> which by the name of it, you can guess what it is. Along with the binary, there was also a PNG file called <em>"flag.png"</em> that was encrypted by the malware. We had to use Cutter to analyse the binary and figure out the encryption algorithms, the keys used for the encryption, and finally write a script to decrypt the png file. Sounds easy, right? Well, it took me a while to figure it out. Let's dissect it.</p>
 <h1>Malware Dissection</h1>
 <p>When the binary is open with Cutter, the first thing that it shows is an overview of the binary that helps to have a general idea about it.</p>
-<p><img alt="Cutter Binary Overview" src="http://camaya.co/images/defeating_ransomware_cutter/cutter_binary_overview.png"></p>
+<p><img alt="Cutter Binary Overview" src="https://camaya.co/images/defeating_ransomware_cutter/cutter_binary_overview.png"></p>
 <p>It shows useful information like the architecture, the format, the language it was written in, the entropy, etc.</p>
 <p>As a first step for the analysis, I identified the main function. For that I just sorted the list of functions by size and assumed that the largest one was main. This assumption turned out to be right.</p>
-<p><img alt="Cutter Functions List" src="http://camaya.co/images/defeating_ransomware_cutter/cutter_functions_list.png"></p>
+<p><img alt="Cutter Functions List" src="https://camaya.co/images/defeating_ransomware_cutter/cutter_functions_list.png"></p>
 <p>After this, I had to identify the encryption algorithm which I couldn't do and had to wait for the hints given during the training:</p>
-<p><img alt="M1ghty Ransomware Hints" src="http://camaya.co/images/defeating_ransomware_cutter/m1ghty_ransomware_hints.png"></p>
+<p><img alt="M1ghty Ransomware Hints" src="https://camaya.co/images/defeating_ransomware_cutter/m1ghty_ransomware_hints.png"></p>
 <p>I was curious to know how I could have known that RC4 was the algorithm and the answer was that I should have reversed it in the past so I would have never figured that out at that time or it would have taken me a long time.</p>
 <p>I googled a bit and found this post from 2014: <a href="https://blog.talosintelligence.com/2014/06/an-introduction-to-recognizing-and.html">An Introduction to Recognizing and Decoding RC4 Encryption in Malware</a>. Hopefully, I'll be able to recognise it in the future.</p>
 <p>After the hints, I renamed the functions and searched for the references of the <code>rc4</code> function:</p>
-<p><img alt="RC4 Function References in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/rc4_function_references_cutter.png"></p>
+<p><img alt="RC4 Function References in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/rc4_function_references_cutter.png"></p>
 <p>As you can see, I saw that there are two calls to this function:</p>
 <ol>
 <li>From the <code>fcn.1400012c0</code> function</li>
 <li>From the <code>main</code> function</li>
 </ol>
 <p>The code of the call from the main function looks like this:</p>
-<p><img alt="RC4 Function Call from main in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/rc4_function_call_main_cutter.png"></p>
+<p><img alt="RC4 Function Call from main in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/rc4_function_call_main_cutter.png"></p>
 <p>Note that the call to the <code>fcn.1400012c0</code> function happens before the call to <code>rc4</code> and as shown in the previous image, that function also calls <code>rc4</code>. You'll understand this in a bit. Since there are no syscalls between offsets <code>0x14000168b</code> and <code>0x1400016bc</code>, this chunk can be <a href="https://radare.gitbooks.io/radare2book/content/analysis/emulation.html">emulated with ESIL</a>. I found this to be one of the most powerful features of r2 and the integration in Cutter is sleek.</p>
 <p>Here's a gif showing the emulation:</p>
-<p><img alt="Gif showing the emulation feature in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/emulation_cutter.gif"></p>
+<p><img alt="Gif showing the emulation feature in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/emulation_cutter.gif"></p>
 <p>After the emulation, I learnt that:</p>
 <ol>
 <li>The function <code>fcn.140001340</code> returns the string <code>"EMUL4TION+RuLEZ!_R2C0N2o19"</code> which I'll call <strong>key1</strong></li>
 </ol>
-<p><img alt="get_key1 function in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/get_key1_function_cutter.png"></p>
+<p><img alt="get_key1 function in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/get_key1_function_cutter.png"></p>
 <ol>
 <li>The function <code>fcn.1400012c0</code> receives <code>key1</code> as parameter, calls the rc4 function, and it returns the string <code>"DEFEATING_A_R4NSoMWAR3_W1TH_CUTT3R"</code> which I'll call <strong>key2</strong></li>
 </ol>
-<p><img alt="decrypt_key2 function in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/decrypt_key2_function_cutter.png"></p>
+<p><img alt="decrypt_key2 function in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/decrypt_key2_function_cutter.png"></p>
 <p>This means that <code>key1</code> is used to decrypt <code>key2</code> using RC4. With this knowledge, I renamed both functions and this is how the code looked like:</p>
-<p><img alt="Renamed functions in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/renamed_functions_cutter.png"></p>
+<p><img alt="Renamed functions in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/renamed_functions_cutter.png"></p>
 <p>As I have seen before, after the call to <code>decrypt_key2</code> there's a call to <code>rc4</code> and now I knew that it receives <code>key2</code> as parameter. After the call to <code>rc4</code>, there are a couple of calls to the <code>rand</code>function which I'm going to ignore for the moment and I'll come back to them later. Then, I see that there's a string with the value <code>"RANS0MW4RED_"</code> which I'll call <strong>ransom_header</strong> and finally, there's a call to the <code>WriteFile</code> function.</p>
 <p>Up until this point, I knew 2 things that happen to the file in this block:</p>
 <ol>
@@ -92,18 +92,18 @@
 <li>A header, <code>ransom_header</code>, is written at the beginning</li>
 </ol>
 <p>I confirmed this by reviewing a hexdump of the file:</p>
-<p><img alt="Hexdump of the encrypted file" src="http://camaya.co/images/defeating_ransomware_cutter/hexdump_encrypted_file.png"></p>
+<p><img alt="Hexdump of the encrypted file" src="https://camaya.co/images/defeating_ransomware_cutter/hexdump_encrypted_file.png"></p>
 <p>The reason I didn't explain the <code>rand</code> calls shown in the previous block of code is because I ignored them the first time I looked into this and I spent quite a lot of time creating a script to decrypt the file with the information I had from what I explained above.</p>
 <p>After many failed attempts, frustrations, and discussions with different people (thanks all!), I came back to Cutter to continue analysing the binary because I was clearly missing something. Breathe.</p>
 <p>I started analysing again by reviewing the references to the <code>WriteFile</code> function:</p>
-<p><img alt="References to the WriteFile function in Cutter" src="http://camaya.co/images/defeating_ransomware_cutter/references_writefile_function_cutter.png"></p>
+<p><img alt="References to the WriteFile function in Cutter" src="https://camaya.co/images/defeating_ransomware_cutter/references_writefile_function_cutter.png"></p>
 <p>That was interesting, there are 3 calls which means that the file is written 3 times and I have analysed only the first one so I decided to analyse the other two.</p>
 <p>This is the relevant code for the second write:</p>
-<p><img alt="Second call to the WriteFile function" src="http://camaya.co/images/defeating_ransomware_cutter/second_call_writefile_function.png"></p>
+<p><img alt="Second call to the WriteFile function" src="https://camaya.co/images/defeating_ransomware_cutter/second_call_writefile_function.png"></p>
 <p>Here's where the <code>rand</code> calls are important. First, I saw that a random number is generated and stored in a variable I called <code>random_number</code>. Then, a little bit after the first call to <code>WriteFile</code>, there's the second call to it and what is it writing? the <code>random_number</code>! The offset <code>0x14000174a</code> is specifying that only 4 bytes will be written.</p>
 <p>Up until here, I knew that the structure of the file was something like <code>[ransom_header|random_number|rc4_encrypted_data]</code>, but there was one more call to <code>WriteFile</code> left.</p>
 <p>Here's the relevant code for the third write:</p>
-<p><img alt="Third call to the WriteFile function" src="http://camaya.co/images/defeating_ransomware_cutter/third_call_writefile_function.png"></p>
+<p><img alt="Third call to the WriteFile function" src="https://camaya.co/images/defeating_ransomware_cutter/third_call_writefile_function.png"></p>
 <p>Before the call to <code>WriteFile</code>, there's a loop between offsets <code>0x140001786</code> and <code>0x1400017ef</code>. That loop is xoring the file's content at offset <code>0x1400017df</code> and before the xor instruction, there's a reference to <code>random_number</code> at offset <code>0x1400017c0</code>. That means that the <code>random_number</code> is the key used for the xor.</p>
 <p>And that's all there was to analyse, after this the file is closed and the execution ends. This is the summary of the analysis on what the binary does:</p>
 <ol>
@@ -115,7 +115,7 @@
 <li>Use <code>random_number</code> to encrypt the content of the file again using XOR</li>
 </ol>
 <p>So, the structure of the file is: <code>[ransom_header|random_number|xor_and_rc4_encrypted_data]</code></p>
-<p><img alt="Encrypted file structure" src="http://camaya.co/images/defeating_ransomware_cutter/encrypted_file_structure.png"></p>
+<p><img alt="Encrypted file structure" src="https://camaya.co/images/defeating_ransomware_cutter/encrypted_file_structure.png"></p>
 <p>The bytes in red are the <code>ransom_header</code>, the bytes in green are the <code>random_number</code>, and the rest is the encrypted data with xor and rc4.</p>
 <h1>Decrypting the file</h1>
 <p>To decrypt the file, I needed to write a script to:</p>
@@ -186,7 +186,7 @@
 
 
 <p>After executing this with <code>go run main.go</code> I got the following file:</p>
-<p><img alt="Decrypted file" src="http://camaya.co/images/defeating_ransomware_cutter/decrypted_flag.png"></p>
+<p><img alt="Decrypted file" src="https://camaya.co/images/defeating_ransomware_cutter/decrypted_flag.png"></p>
 <h1>Final Thoughts</h1>
 <p>That was it! I had a lot of fun with this challenge and I got to experience how powerful r2 and Cutter are so if you have any interest in RE, make sure to check them out! I can also say that the r2 community is super friendly and they are more than happy to answer any question.</p>
 <p>If you'd like to play with this exercise, you can find find it at <a href="https://github.com/radareorg/r2con2019/tree/master/trainings/cutter">https://github.com/radareorg/r2con2019/tree/master/trainings/cutter</a> along with the rest of the material from the conference.</p>

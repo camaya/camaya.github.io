@@ -13,9 +13,9 @@
 		<link href="//fonts.googleapis.com/" rel="dns-prefetch">
 		<link href="//fonts.googleapis.com/css?family=Droid+Serif:400,700,400italic|Abril+Fatface|PT+Sans:400,400italic,700&amp;subset=latin,latin-ext" rel="stylesheet">
 
-		<link rel="stylesheet" href="http://camaya.co/theme/css/poole.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/hyde.css" />
-		<link rel="stylesheet" href="http://camaya.co/theme/css/syntax.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/poole.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/hyde.css" />
+		<link rel="stylesheet" href="https://camaya.co/theme/css/syntax.css" />
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css">
 
 		<!-- RSS -->
@@ -28,7 +28,7 @@
 
 			<h1>
 				<a href="/">
-					<img class="profile-picture" src="http://camaya.co/images/avatar.jpg">
+					<img class="profile-picture" src="https://camaya.co/images/avatar.jpg">
 					Cristhian Amaya
 				</a>
 			</h1>
@@ -55,15 +55,15 @@
 <p>During the last couple of months, I've been helping a friend to automate some tasks of his business.
 They've got an online shop where they "sell" tourism packages. I put sell in quotes because they don't actually sell directly through the website. The people who are interested in booking something have to send a booking request using a contact form and a person would arrange everything for them.</p>
 <p>When the users fill in the form, an email is sent to a particular email address with all the information. When they got an email, they forwarded it internally to the appropriate person to handle it.</p>
-<p><img alt="Contact Form" src="http://camaya.co/images/contact_form.png"></p>
+<p><img alt="Contact Form" src="https://camaya.co/images/contact_form.png"></p>
 <p>This approach works ok but it had a big problem for them:</p>
 <p>They get about 30/40 requests per day and every request can last days, weeks or even months so it is, at a minimum, uncomfortable to manage all of that with only a mailbox.</p>
 <p>The first step was to find a way to manage all the requests easily and here's where I introduced Trello. There are <a href="http://blog.trello.com/how-to-manage-a-killer-sales-funnel-with-trello">multiple</a> <a href="https://trello.com/b/lrAIa0JW/sales-crm-pipeline">resources</a> on <a href="https://trello.com/teams/sales">how to manage a sales team with Trello</a> and after reading a bit about that, I come up with a board like this:</p>
-<p><img alt="Contact Form" src="http://camaya.co/images/sales_board.png"></p>
+<p><img alt="Contact Form" src="https://camaya.co/images/sales_board.png"></p>
 <p>After the Trello board was in place, the workflow changed a bit: after receiving a request by email, they had to create a Trello card <strong>manually</strong> and assigned it to the right person. The problem with this is that creating cards manually is time-consuming and error prone.</p>
 <p>To avoid creating the cards completely manually we could have used this awesome Trello feature: <a href="http://help.trello.com/article/809-creating-cards-by-emailkj">Creating cards by email</a>, though they would've still needed to do something manually. For a few emails a day that wouldn't be a problem, but when we talk about maybe 40 emails per day, it is a problem.</p>
 <p>The other problem with that approach is that the card's description would be <strong>exactly</strong> the email's body and we didn't want that because the cards would be bloated as you can see in the following image:</p>
-<p><img alt="Contact Form" src="http://camaya.co/images/bloated_card.png"></p>
+<p><img alt="Contact Form" src="https://camaya.co/images/bloated_card.png"></p>
 <p>We also could've used <a href="https://zapier.com/zapbook/email/trello/">Zapier</a> or <a href="https://ifttt.com/connect/trello/gmail">IFTTT</a> to create the cards. That would've saved the trouble of sending the emails to the Trello board, but we would've still had the issue with the bloated content.</p>
 <p>Here's where Python comes to the court. The idea was to create a script to do the following:</p>
 <ol>
@@ -78,7 +78,7 @@ They've got an online shop where they "sell" tourism packages. I put sell in quo
 <h3>Fetching emails from Gmail</h3>
 <p>This uses the Gmail API to fetch the emails.
 The q parameter is very handy to filter the fetched emails and avoid getting emails I don't want.</p>
-<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_messages_matching_query</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">get_messages_matching_query</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">response</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">users</span><span class="p">()</span><span class="o">.</span><span class="n">messages</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(</span><span class="n">userId</span><span class="o">=</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
 
     <span class="n">messages</span> <span class="o">=</span> <span class="p">[]</span>
@@ -100,7 +100,7 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
     <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">gmail_msgs</span><span class="p">:</span>
         <span class="n">gmail_id</span> <span class="o">=</span> <span class="n">m</span><span class="p">[</span><span class="s1">&#39;id&#39;</span><span class="p">]</span>
         <span class="n">message</span> <span class="o">=</span> <span class="n">service</span><span class="o">.</span><span class="n">users</span><span class="p">()</span><span class="o">.</span><span class="n">messages</span><span class="p">()</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">userId</span><span class="o">=</span><span class="s1">&#39;me&#39;</span><span class="p">,</span> <span class="nb">id</span><span class="o">=</span><span class="n">gmail_id</span><span class="p">,</span>
-                                                 <span class="n">format</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
+                                                 <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;raw&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">execute</span><span class="p">()</span>
         <span class="n">msg_bytes</span> <span class="o">=</span> <span class="n">base64</span><span class="o">.</span><span class="n">urlsafe_b64decode</span><span class="p">(</span><span class="n">message</span><span class="p">[</span><span class="s1">&#39;raw&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">encode</span><span class="p">(</span><span class="s1">&#39;ASCII&#39;</span><span class="p">))</span>
         <span class="n">msg_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">msg_bytes</span><span class="p">,</span> <span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
         <span class="n">mime_msg</span> <span class="o">=</span> <span class="n">message_from_string</span><span class="p">(</span><span class="n">msg_str</span><span class="p">)</span>
@@ -147,7 +147,7 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 
 <span class="k">def</span> <span class="nf">get_formatted_card</span><span class="p">(</span><span class="n">template</span><span class="p">,</span> <span class="n">card_info</span><span class="p">):</span>
     <span class="n">card</span> <span class="o">=</span> <span class="p">{}</span>
-    <span class="n">card</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;{0} - {1}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">card_info</span><span class="p">[</span><span class="s1">&#39;client_name&#39;</span><span class="p">],</span> <span class="n">card_info</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">])</span>
+    <span class="n">card</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{0}</span><span class="s1"> - </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">card_info</span><span class="p">[</span><span class="s1">&#39;client_name&#39;</span><span class="p">],</span> <span class="n">card_info</span><span class="p">[</span><span class="s1">&#39;product&#39;</span><span class="p">])</span>
     <span class="n">card</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">template</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#PHONE#&#39;</span><span class="p">,</span> <span class="n">card_info</span><span class="p">[</span><span class="s1">&#39;client_phone&#39;</span><span class="p">])</span>
         <span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;#EMAIL#&#39;</span><span class="p">,</span> <span class="n">card_info</span><span class="p">[</span><span class="s1">&#39;client_email&#39;</span><span class="p">])</span>
@@ -169,7 +169,7 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 <p>This uses the Trello API to create the card.</p>
 <div class="highlight"><pre><span></span><span class="n">BASE_URL</span> <span class="o">=</span> <span class="s1">&#39;https://api.trello.com/1/&#39;</span>
 
-<span class="k">def</span> <span class="nf">create_card</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">list_id</span><span class="p">,</span> <span class="n">labels_ids</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">create_card</span><span class="p">(</span><span class="n">name</span><span class="p">,</span> <span class="n">description</span><span class="p">,</span> <span class="n">list_id</span><span class="p">,</span> <span class="n">labels_ids</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">endpoint</span> <span class="o">=</span> <span class="s1">&#39;cards&#39;</span>
     <span class="n">query_string</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;name&#39;</span><span class="p">:</span> <span class="n">name</span><span class="p">,</span> <span class="s1">&#39;desc&#39;</span><span class="p">:</span> <span class="n">description</span><span class="p">,</span> <span class="s1">&#39;idList&#39;</span><span class="p">:</span> <span class="n">list_id</span><span class="p">}</span>
 
@@ -180,14 +180,14 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
     <span class="k">return</span> <span class="n">r</span><span class="o">.</span><span class="n">json</span><span class="p">()</span>
 
 
-<span class="k">def</span> <span class="nf">_post_api_response</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">query_string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_post_api_response</span><span class="p">(</span><span class="n">endpoint</span><span class="p">,</span> <span class="n">query_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">url</span> <span class="o">=</span> <span class="n">BASE_URL</span> <span class="o">+</span> <span class="n">endpoint</span>
     <span class="n">params</span> <span class="o">=</span> <span class="n">_get_params</span><span class="p">(</span><span class="n">query_string</span><span class="p">)</span>
     <span class="n">r</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="n">url</span><span class="p">,</span> <span class="n">params</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">r</span>
 
 
-<span class="k">def</span> <span class="nf">_get_params</span><span class="p">(</span><span class="n">query_string</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_params</span><span class="p">(</span><span class="n">query_string</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
         <span class="s1">&#39;key&#39;</span><span class="p">:</span> <span class="n">API_KEY</span><span class="p">,</span>
         <span class="s1">&#39;token&#39;</span><span class="p">:</span> <span class="n">OAUTH_TOKEN</span>
@@ -204,9 +204,9 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 <p>Again, this uses the Gmail API to add the label.</p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">set_message_label</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">msg_id</span><span class="p">,</span> <span class="n">label_name</span><span class="p">):</span>
     <span class="n">labels</span> <span class="o">=</span> <span class="n">get_labels</span><span class="p">(</span><span class="n">service</span><span class="p">)</span>
-    <span class="n">label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">label_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span> <span class="bp">None</span><span class="p">)</span>
+    <span class="n">label</span> <span class="o">=</span> <span class="nb">next</span><span class="p">((</span><span class="n">l</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">labels</span> <span class="k">if</span> <span class="n">l</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">upper</span><span class="p">()</span> <span class="o">==</span> <span class="n">label_name</span><span class="o">.</span><span class="n">upper</span><span class="p">()),</span> <span class="kc">None</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">label</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="n">label_object</span> <span class="o">=</span> <span class="n">make_label_object</span><span class="p">(</span><span class="n">label_name</span><span class="p">)</span>
         <span class="n">label</span> <span class="o">=</span> <span class="n">create_label</span><span class="p">(</span><span class="n">service</span><span class="p">,</span> <span class="n">label_object</span><span class="p">)</span>
 
@@ -245,9 +245,9 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
                                      <span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;json_keyfile_name&#39;</span><span class="p">])</span>
     <span class="n">gmail_svc</span> <span class="o">=</span> <span class="n">gmail</span><span class="o">.</span><span class="n">get_service</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;account&#39;</span><span class="p">],</span> <span class="n">json_keyfile_path</span><span class="p">)</span>
 
-    <span class="n">q</span> <span class="o">=</span> <span class="s1">&#39;from: {} &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;from_account&#39;</span><span class="p">])</span>
-    <span class="n">q</span> <span class="o">+=</span> <span class="s1">&#39;to: {} &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;to_account&#39;</span><span class="p">])</span>
-    <span class="n">q</span> <span class="o">+=</span> <span class="s1">&#39;subject: {} &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
+    <span class="n">q</span> <span class="o">=</span> <span class="s1">&#39;from: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;from_account&#39;</span><span class="p">])</span>
+    <span class="n">q</span> <span class="o">+=</span> <span class="s1">&#39;to: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;to_account&#39;</span><span class="p">])</span>
+    <span class="n">q</span> <span class="o">+=</span> <span class="s1">&#39;subject: </span><span class="si">{}</span><span class="s1"> &#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;subject&#39;</span><span class="p">])</span>
     <span class="n">q</span> <span class="o">+=</span> <span class="s1">&#39;-label: &#39;</span> <span class="o">+</span> <span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;trello_label&#39;</span><span class="p">]</span>
     <span class="n">q</span> <span class="o">+=</span> <span class="s1">&#39;after: &#39;</span> <span class="o">+</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s1">&#39;%Y/%m/</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">msgs</span> <span class="o">=</span> <span class="n">gmail</span><span class="o">.</span><span class="n">get_messages_matching_query</span><span class="p">(</span><span class="n">gmail_svc</span><span class="p">,</span> <span class="n">q</span><span class="p">)</span>
@@ -258,26 +258,26 @@ The q parameter is very handy to filter the fetched emails and avoid getting ema
 
         <span class="n">cards_created</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">mime_msgs</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-            <span class="n">msg_content</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get_payload</span><span class="p">(</span><span class="n">decode</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
+            <span class="n">msg_content</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">get_payload</span><span class="p">(</span><span class="n">decode</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">decode</span><span class="p">(</span><span class="s1">&#39;utf-8&#39;</span><span class="p">)</span>
             <span class="n">info</span> <span class="o">=</span> <span class="n">extract_card_info</span><span class="p">(</span><span class="n">msg_content</span><span class="p">)</span>
             <span class="n">card</span> <span class="o">=</span> <span class="n">get_formatted_card</span><span class="p">(</span><span class="n">trello_card_template</span><span class="p">,</span> <span class="n">info</span><span class="p">)</span>
             <span class="n">trello</span><span class="o">.</span><span class="n">create_card</span><span class="p">(</span><span class="n">card</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">],</span> <span class="n">card</span><span class="p">[</span><span class="s1">&#39;description&#39;</span><span class="p">],</span>
                                <span class="n">settings</span><span class="o">.</span><span class="n">TRELLO</span><span class="p">[</span><span class="s1">&#39;list_id&#39;</span><span class="p">],</span>
                                <span class="n">settings</span><span class="o">.</span><span class="n">TRELLO</span><span class="p">[</span><span class="s1">&#39;labels_ids&#39;</span><span class="p">])</span>
             <span class="n">gmail</span><span class="o">.</span><span class="n">set_message_label</span><span class="p">(</span><span class="n">gmail_svc</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">settings</span><span class="o">.</span><span class="n">GMAIL</span><span class="p">[</span><span class="s1">&#39;trello_label&#39;</span><span class="p">])</span>
-            <span class="k">print</span><span class="p">(</span><span class="s1">&#39;card {} successfully created.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">card</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;card </span><span class="si">{}</span><span class="s1"> successfully created.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">card</span><span class="p">[</span><span class="s1">&#39;name&#39;</span><span class="p">]))</span>
             <span class="n">cards_created</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="n">cards_label</span> <span class="o">=</span> <span class="s1">&#39;cards&#39;</span> <span class="k">if</span> <span class="n">cards_created</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="k">else</span> <span class="s1">&#39;card&#39;</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;{} {} has been created.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cards_created</span><span class="p">,</span> <span class="n">cards_label</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1"> has been created.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">cards_created</span><span class="p">,</span> <span class="n">cards_label</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="k">print</span><span class="p">(</span><span class="s1">&#39;There are no new messages&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;There are no new messages&#39;</span><span class="p">)</span>
 </pre></div>
 
 
 <p>Here are a couple of images of how the board looks after this script runs.</p>
-<p><img alt="Cards after script" src="http://camaya.co/images/cards_after_script_run.png"></p>
-<p><img alt="Final card details" src="http://camaya.co/images/final_card_created.png"></p>
+<p><img alt="Cards after script" src="https://camaya.co/images/cards_after_script_run.png"></p>
+<p><img alt="Final card details" src="https://camaya.co/images/final_card_created.png"></p>
 <p>The script is hosted on an Ubuntu Server and there's a cronjob that executes it every 5 minutes.
 This solves the two issues I had, the cards are created completely automatically and they have exactly the information I need.</p>
 <h2>Summary</h2>
